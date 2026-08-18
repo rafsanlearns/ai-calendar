@@ -1,0 +1,164 @@
+
+@media (max-width: 768px) {
+    .container {
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .title {
+        font-size: 1.8rem;
+    }
+
+    .current-date {
+        font-size: 1rem;
+        padding: 0 10px;
+        line-height: 1.4;
+    }
+
+    .calendar-grid {
+        gap: 3px;
+        padding: 5px;
+    }
+
+    .day-cell {
+        min-height: 100px; /* Increased from 80px */
+        padding: 8px;
+    }
+
+    .english-date {
+        font-size: 1.4rem; /* Increased from 1.2rem */
+        margin-top: 20px; /* Increased from 15px */
+    }
+
+    .bangla-date,
+    .hijri-date {
+        font-size: 0.85rem; /* Increased from 0.7rem */
+        padding: 3px 6px;
+    }
+
+    .day-header {
+        font-size: 1rem;
+        padding: 8px 5px;
+    }
+
+    .controls {
+        padding: 15px 10px;
+        gap: 10px;
+    }
+
+    select, .nav-btn {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    .quote {
+        font-size: 0.9rem;
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 0;
+    }
+
+    .calendar {
+        padding: 10px;
+    }
+
+    .calendar-grid {
+        gap: 2px;
+    }
+
+    .day-cell {
+        min-height: 90px; /* Increased from 60px */
+        padding: 6px;
+    }
+
+    .english-date {
+        font-size: 1.2rem; /* Increased from 1rem */
+        margin-top: 15px;
+    }
+
+    .bangla-date,
+    .hijri-date {
+        font-size: 0.75rem; /* Increased from 0.6rem */
+    }
+
+    .controls {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .nav-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    /* Make month/year selectors larger */
+    select {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    /* Make navigation buttons larger */
+    .nav-btn {
+        padding: 12px 20px;
+        font-size: 1rem;
+        width: 48%;
+    }
+
+    /* For very small devices */
+    @media (max-width: 360px) {
+        .day-cell {
+            min-height: 80px;
+        }
+
+        .english-date {
+            font-size: 1.1rem;
+            margin-top: 12px;
+        }
+    }
+}
+
+/* For tablets in portrait mode */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .day-cell {
+        min-height: 110px;
+    }
+
+    .english-date {
+        font-size: 1.6rem;
+    }
+
+    .bangla-date,
+    .hijri-date {
+        font-size: 0.9rem;
+    }
+}
+
+/* For landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .day-cell {
+        min-height: 80px;
+    }
+
+    .calendar-grid {
+        gap: 3px;
+    }
+
+    .controls {
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+
+    .nav-controls {
+        width: auto;
+    }
+
+    select {
+        width: auto;
+    }
+}

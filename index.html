@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলা ক্যালেন্ডার</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --background-gradient: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --hover-color: #3498db20;
+            --today-bg: #e74c3c10;
+            --weekend-bg: #f39c1210;
+        }
+
+        body {
+            background: var(--background-gradient);
+            min-height: 100vh;
+            padding: 15px;
+            color: var(--primary-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--primary-color);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .current-date {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            flex-wrap: wrap;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        select {
+            padding: 10px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            border-color: var(--secondary-color);
+        }
+
+        .calendar {
+            padding: 20px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .day-header {
+            text-align: center;
+            padding: 10px;
+            background: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+
+        .day-cell {
+            position: relative;
+            min-height: 120px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        .day-cell:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: var(--hover-color);
+        }
+
+        .english-date {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 25px;
+            color: var(--primary-color);
+        }
+
+        .bangla-date {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            background: #e74c3c10;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+
+        .hijri-date {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 0.8rem;
+            color: #27ae60;
+            background: #27ae6010;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+
+        .today {
+            background: var(--today-bg);
+            border: 2px solid var(--accent-color);
+        }
+
+        .weekend {
+            background: var(--weekend-bg);
+        }
+
+        .different-month {
+            opacity: 0.5;
+        }
+
+        .quote-section {
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+
+        .quote {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            font-style: italic;
+        }
+
+        .quote-author {
+            margin-top: 10px;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .title {
+                font-size: 1.8rem;
+            }
+
+            .current-date {
+                font-size: 1rem;
+            }
+
+            .calendar-grid {
+                gap: 5px;
+                padding: 10px;
+            }
+
+            .day-cell {
+                min-height: 80px;
+                padding: 5px;
+            }
+
+            .english-date {
+                font-size: 1.2rem;
+                margin-top: 15px;
+            }
+
+            .bangla-date,
+            .hijri-date {
+                font-size: 0.7rem;
+                padding: 2px 4px;
+            }
+
+            .day-header {
+                font-size: 0.9rem;
+                padding: 8px 5px;
+            }
+
+            .controls {
+                padding: 10px;
+                gap: 10px;
+            }
+
+            select, .nav-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+
+            .quote {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+
+            .day-cell {
+                min-height: 60px;
+            }
+
+            .english-date {
+                font-size: 1rem;
+                margin-top: 10px;
+            }
+
+            .bangla-date,
+            .hijri-date {
+                font-size: 0.6rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .nav-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">বাংলা ক্যালেন্ডার</h1>
+            <p class="current-date" id="currentDate"></p>
+        </div>
+
+        <div class="controls">
+            <div class="nav-controls">
+                <button class="nav-btn" onclick="prevMonth()">← পূর্ববর্তী মাস</button>
+                <button class="nav-btn" onclick="nextMonth()">পরবর্তী মাস →</button>
+            </div>
+            <select id="monthSelect">
+                <option value="0">জানুয়ারি</option>
+                <option value="1">ফেব্রুয়ারি</option>
+                <option value="2">মার্চ</option>
+                <option value="3">এপ্রিল</option>
+                <option value="4">মে</option>
+                <option value="5">জুন</option>
+                <option value="6">জুলাই</option>
+                <option value="7">আগস্ট</option>
+                <option value="8">সেপ্টেম্বর</option>
+                <option value="9">অক্টোবর</option>
+                <option value="10">নভেম্বর</option>
+                <option value="11">ডিসেম্বর</option>
+            </select>
+            <select id="yearSelect"></select>
+            <button class="nav-btn" onclick="goToToday()">আজকের তারিখ</button>
+        </div>
+
+        <div class="calendar">
+            <div class="calendar-grid" id="calendar"></div>
+        </div>
+
+        <div class="quote-section">
+            <p class="quote" id="dailyQuote"></p>
+            <p class="quote-author" id="quoteAuthor"></p>
+        </div>
+    </div>
+
+    <script>
+        // Bengali numerals and constants
+        const bengaliNumerals = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        const banglaMonths = [
+            'বৈশাখ', 'জ্যৈষ্ঠ', 'আষাঢ়', 'শ্রাবণ', 'ভাদ্র', 'আশ্বিন',
+            'কার্তিক', 'অগ্রহায়ণ', 'পৌষ', 'মাঘ', 'ফাল্গুন', 'চৈত্র'
+        ];
+        const hijriMonths = [
+            'মুহাররম', 'সফর', 'রবিউল আউয়াল', 'রবিউস সানি', 'জমাদিউল আউয়াল', 'জমাদিউস সানি',
+            'রজব', 'শাবান', 'রমজান', 'শাওয়াল', 'জিলকদ', 'জিলহজ'
+        ];
+        const dayNames = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'];
+        const fullDayNames = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+        const monthNames = [
+            'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
+            'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'
+        ];
+
+        // Base dates for conversion (May 31, 2025 = 17 Jyaistha 1432, 02 Zilhajj 1446)
+        const baseEnglishDate = new Date(2025, 4, 31);
+        const baseBanglaYear = 1432;
+        const baseBanglaMonth = 1; // Jyaistha (0-indexed)
+        const baseBanglaDay = 17;
+        const baseHijriYear = 1446;
+        const baseHijriMonth = 11; // Zilhajj (0-indexed)
+        const baseHijriDay = 2;
+
+        // Bengali quotes
+        const bengaliQuotes = [
+            {
+                quote: "জীবন যখন শূন্য করে দেয় তখনই পূর্ণ করে নিতে হয়।",
+                author: "রবীন্দ্রনাথ ঠাকুর"
+            },
+            {
+                quote: "সত্য যা, তাই সুন্দর। সুন্দর যা, তাই সত্য।",
+                author: "কাজী নজরুল ইসলাম"
+            },
+            {
+                quote: "মানুষের সাথে প্রেম করো, জীবনের সাথে নয়।",
+                author: "জসীমউদ্দীন"
+            },
+            {
+                quote: "যদি তোর ডাক শুনে কেউ না আসে তবে একলা চলো রে।",
+                author: "রবীন্দ্রনাথ ঠাকুর"
+            },
+            {
+                quote: "বাংলা ভাষার মতো মধুর ভাষা পৃথিবীতে আর নেই।",
+                author: "মাইকেল মধুসূদন দত্ত"
+            }
+        ];
+
+        function toBengaliNumeral(number) {
+            return number.toString().split('').map(digit => bengaliNumerals[parseInt(digit)] || digit).join('');
+        }
+
+        function getBanglaDate(englishDate) {
+            const diffDays = Math.floor((englishDate - baseEnglishDate) / (1000 * 60 * 60 * 24));
+            
+            let banglaYear = baseBanglaYear;
+            let banglaMonth = baseBanglaMonth;
+            let banglaDay = baseBanglaDay + diffDays;
+            
+            const daysInMonth = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30];
+            
+            while (banglaDay > daysInMonth[banglaMonth]) {
+                banglaDay -= daysInMonth[banglaMonth];
+                banglaMonth++;
+                if (banglaMonth >= 12) {
+                    banglaMonth = 0;
+                    banglaYear++;
+                }
+            }
+            
+            while (banglaDay <= 0) {
+                banglaMonth--;
+                if (banglaMonth < 0) {
+                    banglaMonth = 11;
+                    banglaYear--;
+                }
+                banglaDay += daysInMonth[banglaMonth];
+            }
+            
+            return {
+                day: banglaDay,
+                month: banglaMonth,
+                year: banglaYear
+            };
+        }
+
+        function getHijriDate(englishDate) {
+            const diffDays = Math.floor((englishDate - baseEnglishDate) / (1000 * 60 * 60 * 24));
+            
+            let hijriYear = baseHijriYear;
+            let hijriMonth = baseHijriMonth;
+            let hijriDay = baseHijriDay + diffDays;
+            
+            while (hijriDay > 29) {
+                hijriDay -= 29;
+                hijriMonth++;
+                if (hijriMonth >= 12) {
+                    hijriMonth = 0;
+                    hijriYear++;
+                }
+            }
+            
+            while (hijriDay <= 0) {
+                hijriMonth--;
+                if (hijriMonth < 0) {
+                    hijriMonth = 11;
+                    hijriYear--;
+                }
+                hijriDay += 29;
+            }
+            
+            return {
+                day: hijriDay,
+                month: hijriMonth,
+                year: hijriYear
+            };
+        }
+
+        function generateCalendar(year, month) {
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startingDayOfWeek = firstDay.getDay();
+            const totalDays = lastDay.getDate();
+
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+
+            // Add day headers
+            dayNames.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.textContent = day;
+                calendar.appendChild(dayHeader);
+            });
+
+            // Add empty cells for previous month
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'day-cell different-month';
+                calendar.appendChild(emptyCell);
+            }
+
+            // Add days
+            for (let day = 1; day <= totalDays; day++) {
+                const currentDate = new Date(year, month, day);
+                const cell = document.createElement('div');
+                cell.className = 'day-cell';
+
+                if (currentDate.getDay() === 5 || currentDate.getDay() === 6) {
+                    cell.classList.add('weekend');
+                }
+
+                const today = new Date();
+                if (currentDate.toDateString() === today.toDateString()) {
+                    cell.classList.add('today');
+                }
+
+                const englishDate = document.createElement('div');
+                englishDate.className = 'english-date';
+                englishDate.textContent = toBengaliNumeral(day);
+
+                const banglaDate = getBanglaDate(currentDate);
+                const banglaDateEl = document.createElement('div');
+                banglaDateEl.className = 'bangla-date';
+                banglaDateEl.textContent = `${toBengaliNumeral(banglaDate.day)} ${banglaMonths[banglaDate.month]}`;
+                banglaDateEl.title = `${toBengaliNumeral(banglaDate.day)} ${banglaMonths[banglaDate.month]} ${toBengaliNumeral(banglaDate.year)}`;
+
+                const hijriDate = getHijriDate(currentDate);
+                const hijriDateEl = document.createElement('div');
+                hijriDateEl.className = 'hijri-date';
+                hijriDateEl.textContent = `${toBengaliNumeral(hijriDate.day)} ${hijriMonths[hijriDate.month]}`;
+                hijriDateEl.title = `${toBengaliNumeral(hijriDate.day)} ${hijriMonths[hijriDate.month]} ${toBengaliNumeral(hijriDate.year)}`;
+
+                cell.appendChild(englishDate);
+                cell.appendChild(banglaDateEl);
+                cell.appendChild(hijriDateEl);
+                calendar.appendChild(cell);
+            }
+
+            updateCurrentDate();
+        }
+
+        function updateCurrentDate() {
+            const now = new Date();
+            const banglaDate = getBanglaDate(now);
+            const hijriDate = getHijriDate(now);
+            
+            const formattedDate = `${fullDayNames[now.getDay()]}, ${toBengaliNumeral(now.getDate())} ${monthNames[now.getMonth()]} ${toBengaliNumeral(now.getFullYear())} | ` +
+                                `${toBengaliNumeral(banglaDate.day)} ${banglaMonths[banglaDate.month]} ${toBengaliNumeral(banglaDate.year)} | ` +
+                                `${toBengaliNumeral(hijriDate.day)} ${hijriMonths[hijriDate.month]} ${toBengaliNumeral(hijriDate.year)}`;
+            
+            document.getElementById('currentDate').textContent = formattedDate;
+        }
+
+        function updateDailyQuote() {
+            const today = new Date();
+            const quoteIndex = today.getDate() % bengaliQuotes.length;
+            const quote = bengaliQuotes[quoteIndex];
+            
+            document.getElementById('dailyQuote').textContent = quote.quote;
+            document.getElementById('quoteAuthor').textContent = `- ${quote.author}`;
+        }
+
+        function prevMonth() {
+            let currentMonth = parseInt(document.getElementById('monthSelect').value);
+            let currentYear = parseInt(document.getElementById('yearSelect').value);
+            
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            
+            document.getElementById('monthSelect').value = currentMonth;
+            document.getElementById('yearSelect').value = currentYear;
+            generateCalendar(currentYear, currentMonth);
+        }
+
+        function nextMonth() {
+            let currentMonth = parseInt(document.getElementById('monthSelect').value);
+            let currentYear = parseInt(document.getElementById('yearSelect').value);
+            
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            
+            document.getElementById('monthSelect').value = currentMonth;
+            document.getElementById('yearSelect').value = currentYear;
+            generateCalendar(currentYear, currentMonth);
+        }
+
+        function goToToday() {
+            const today = new Date();
+            document.getElementById('monthSelect').value = today.getMonth();
+            document.getElementById('yearSelect').value = today.getFullYear();
+            generateCalendar(today.getFullYear(), today.getMonth());
+        }
+
+        function initializeYearSelect() {
+            const yearSelect = document.getElementById('yearSelect');
+            const currentYear = new Date().getFullYear();
+            
+            for (let year = currentYear - 50; year <= currentYear + 50; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = toBengaliNumeral(year);
+                if (year === currentYear) {
+                    option.selected = true;
+                }
+                yearSelect.appendChild(option);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('monthSelect').addEventListener('change', function() {
+            generateCalendar(
+                parseInt(document.getElementById('yearSelect').value),
+                parseInt(this.value)
+            );
+        });
+
+        document.getElementById('yearSelect').addEventListener('change', function() {
+            generateCalendar(
+                parseInt(this.value),
+                parseInt(document.getElementById('monthSelect').value)
+            );
+        });
+
+        // Initialize
+        initializeYearSelect();
+        goToToday();
+        updateDailyQuote();
+        setInterval(updateCurrentDate, 60000);
+
+        // Update quote daily at midnight
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        const timeUntilMidnight = tomorrow - new Date();
+        setTimeout(() => {
+            updateDailyQuote();
+            setInterval(updateDailyQuote, 24 * 60 * 60 * 1000);
+        }, timeUntilMidnight);
+    </script>
+</body>
+</html>
