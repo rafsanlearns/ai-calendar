@@ -1,0 +1,52 @@
+{
+  "name": "CS Calendar - By Rafsan",
+  "short_name": "CS Calendar",
+  "description": "A multilingual calendar app with Bangla, English & Arabic dates, holidays from 2020-2050",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a1a",
+  "theme_color": "#0f0f23",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icons/moon-icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/moon-icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/moon-icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/moon-icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/moon-icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/moon-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/moon-icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/moon-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
