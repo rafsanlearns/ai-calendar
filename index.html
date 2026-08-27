@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0f0f23">
     <title>CS Calendar - By Rafsan</title>
     <link rel="manifest" href="manifest.json">
@@ -35,6 +35,7 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* Animated Starry Background */
@@ -168,32 +169,6 @@
             box-shadow: 0 10px 30px rgba(192, 132, 252, 0.3);
         }
 
-        /* View Toggle */
-        .view-toggle {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .view-btn {
-            padding: 8px 20px;
-            border: 1px solid var(--glass-border);
-            background: var(--glass);
-            color: var(--text-dim);
-            border-radius: 20px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .view-btn:hover, .view-btn.active {
-            background: var(--accent);
-            color: white;
-            border-color: transparent;
-        }
-
         /* Date Display */
         .date-display {
             text-align: center;
@@ -246,6 +221,31 @@
             direction: rtl;
         }
 
+        /* Year Selector */
+        .year-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .year-selector select {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .year-selector select option {
+            background: var(--dark);
+        }
+
         /* Calendar Grid */
         .calendar-wrapper {
             background: var(--glass);
@@ -254,6 +254,8 @@
             padding: 25px;
             backdrop-filter: blur(10px);
             margin-bottom: 20px;
+            width: 100%;
+            overflow: hidden;
         }
 
         .calendar-header {
@@ -288,6 +290,7 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .arrow-btn:hover {
@@ -302,6 +305,7 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 8px;
             margin-bottom: 10px;
+            width: 100%;
         }
 
         .weekday {
@@ -323,6 +327,7 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 8px;
+            width: 100%;
         }
 
         .day-cell {
@@ -338,6 +343,8 @@
             transition: all 0.3s ease;
             position: relative;
             padding: 5px;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .day-cell:hover {
@@ -375,6 +382,7 @@
         .day-num {
             font-size: 18px;
             font-weight: 600;
+            line-height: 1;
         }
 
         .day-sub {
@@ -382,6 +390,8 @@
             color: var(--text-dim);
             margin-top: 2px;
             font-family: 'Hind Siliguri', sans-serif;
+            line-height: 1;
+            white-space: nowrap;
         }
 
         .day-sub.ar {
@@ -633,19 +643,6 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .logo-text { font-size: 28px; }
-            .date-main { font-size: 20px; }
-            .days-grid { gap: 4px; }
-            .day-cell { border-radius: 10px; }
-            .day-num { font-size: 14px; }
-            .week-row { grid-template-columns: 1fr; }
-            .year-grid { grid-template-columns: 1fr; }
-            .date-sub { gap: 15px; }
-            .install-btn { bottom: 20px; right: 20px; padding: 12px 20px; font-size: 12px; }
-        }
-
         /* Loading */
         .loading {
             position: fixed;
@@ -691,29 +688,220 @@
             border-radius: 4px;
         }
 
-        /* Year selector */
-        .year-selector {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            justify-content: center;
-            margin-bottom: 20px;
+        /* ==================== MOBILE FIXES ==================== */
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 10px;
+            }
+
+            .calendar-wrapper {
+                padding: 12px;
+                border-radius: 16px;
+            }
+
+            .weekdays {
+                gap: 2px;
+                margin-bottom: 6px;
+            }
+
+            .weekday {
+                font-size: 9px;
+                padding: 6px 1px;
+                letter-spacing: 0;
+            }
+
+            .days-grid {
+                gap: 2px;
+            }
+
+            .day-cell {
+                border-radius: 8px;
+                padding: 2px;
+                min-height: 38px;
+            }
+
+            .day-num {
+                font-size: 13px;
+            }
+
+            .day-sub,
+            .day-sub.ar {
+                font-size: 7px;
+                margin-top: 1px;
+            }
+
+            .holiday-badge {
+                width: 4px;
+                height: 4px;
+                top: 2px;
+                right: 2px;
+            }
+
+            .calendar-header {
+                margin-bottom: 10px;
+            }
+
+            .month-year {
+                font-size: 16px;
+            }
+
+            .arrow-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .nav-bar {
+                gap: 6px;
+                margin-bottom: 15px;
+            }
+
+            .nav-btn {
+                padding: 8px 14px;
+                font-size: 11px;
+            }
+
+            .date-display {
+                padding: 12px;
+                border-radius: 14px;
+                margin-bottom: 15px;
+            }
+
+            .date-main {
+                font-size: 16px;
+            }
+
+            .date-item .value {
+                font-size: 13px;
+            }
+
+            .date-sub {
+                gap: 12px;
+            }
+
+            .logo-text {
+                font-size: 24px;
+            }
+
+            .logo-icon {
+                font-size: 36px;
+            }
+
+            .year-selector {
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+
+            .year-selector select {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+
+            .holiday-section {
+                padding: 15px;
+            }
+
+            .holiday-name {
+                font-size: 12px;
+            }
+
+            .holiday-date {
+                font-size: 11px;
+                min-width: 60px;
+            }
+
+            .week-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .year-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .year-selector select {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: var(--text);
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
-            cursor: pointer;
-            outline: none;
+        @media (min-width: 481px) and (max-width: 768px) {
+            .app-container {
+                padding: 15px;
+            }
+
+            .calendar-wrapper {
+                padding: 18px;
+            }
+
+            .weekdays {
+                gap: 4px;
+            }
+
+            .days-grid {
+                gap: 4px;
+            }
+
+            .weekday {
+                font-size: 10px;
+                padding: 10px 3px;
+            }
+
+            .day-cell {
+                border-radius: 10px;
+                padding: 4px;
+            }
+
+            .day-num {
+                font-size: 15px;
+            }
+
+            .day-sub,
+            .day-sub.ar {
+                font-size: 8px;
+            }
+
+            .week-row {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 6px;
+            }
+
+            .week-day-card {
+                padding: 12px 6px;
+                border-radius: 14px;
+            }
+
+            .week-day-num {
+                font-size: 20px;
+            }
+
+            .week-day-sub {
+                font-size: 9px;
+            }
         }
 
-        .year-selector select option {
-            background: var(--dark);
+        @media (max-width: 360px) {
+            .weekday {
+                font-size: 8px;
+                padding: 5px 0;
+            }
+
+            .day-num {
+                font-size: 11px;
+            }
+
+            .day-sub,
+            .day-sub.ar {
+                font-size: 6px;
+            }
+
+            .nav-btn {
+                padding: 6px 10px;
+                font-size: 10px;
+            }
+
+            .calendar-wrapper {
+                padding: 8px;
+            }
+
+            .day-cell {
+                min-height: 32px;
+                border-radius: 6px;
+            }
         }
     </style>
 </head>
@@ -821,7 +1009,7 @@
         // ==================== CONFIGURATION ====================
         const MIN_YEAR = 2020;
         const MAX_YEAR = 2050;
-        
+
         // ==================== STATE ====================
         let currentDate = new Date();
         let currentView = 'monthly';
@@ -843,11 +1031,9 @@
 
         // ==================== HOLIDAYS DATABASE (2020-2050) ====================
         const holidays = {
-            // Weekly Holidays (Friday in Bangladesh context)
             weekly: [
                 { day: 5, name: 'Weekly Holiday (Friday)', type: 'Weekly' }
             ],
-            // Fixed Annual Holidays (Gregorian)
             annual: {
                 '1-1': [{ name: 'New Year\'s Day', type: 'Annual' }],
                 '2-21': [{ name: 'International Mother Language Day', type: 'National' }],
@@ -860,9 +1046,7 @@
                 '12-16': [{ name: 'Victory Day', type: 'National' }],
                 '12-25': [{ name: 'Christmas Day', type: 'Religious' }]
             },
-            // Islamic Holidays (Approximate dates - will vary)
             islamic: {
-                // Ramadan start approximations
                 '2020-4-24': 'Ramadan Begins',
                 '2021-4-14': 'Ramadan Begins',
                 '2022-4-3': 'Ramadan Begins',
@@ -875,7 +1059,6 @@
                 '2029-1-16': 'Ramadan Begins',
                 '2030-1-5': 'Ramadan Begins',
                 '2030-12-26': 'Ramadan Begins',
-                // Eid-ul-Fitr
                 '2020-5-24': 'Eid-ul-Fitr',
                 '2021-5-13': 'Eid-ul-Fitr',
                 '2022-5-2': 'Eid-ul-Fitr',
@@ -887,7 +1070,6 @@
                 '2028-2-26': 'Eid-ul-Fitr',
                 '2029-2-14': 'Eid-ul-Fitr',
                 '2030-2-4': 'Eid-ul-Fitr',
-                // Eid-ul-Adha
                 '2020-7-31': 'Eid-ul-Adha',
                 '2021-7-20': 'Eid-ul-Adha',
                 '2022-7-9': 'Eid-ul-Adha',
@@ -899,7 +1081,6 @@
                 '2028-5-5': 'Eid-ul-Adha',
                 '2029-4-24': 'Eid-ul-Adha',
                 '2030-4-14': 'Eid-ul-Adha',
-                // Ashura
                 '2020-8-30': 'Ashura',
                 '2021-8-19': 'Ashura',
                 '2022-8-8': 'Ashura',
@@ -911,7 +1092,6 @@
                 '2028-6-4': 'Ashura',
                 '2029-5-24': 'Ashura',
                 '2030-5-13': 'Ashura',
-                // Shab-e-Barat
                 '2020-4-9': 'Shab-e-Barat',
                 '2021-3-29': 'Shab-e-Barat',
                 '2022-3-18': 'Shab-e-Barat',
@@ -923,31 +1103,6 @@
                 '2028-1-13': 'Shab-e-Barat',
                 '2029-1-2': 'Shab-e-Barat',
                 '2029-12-22': 'Shab-e-Barat',
-                // Shab-e-Qadr
-                '2020-5-19': 'Shab-e-Qadr',
-                '2021-5-8': 'Shab-e-Qadr',
-                '2022-4-28': 'Shab-e-Qadr',
-                '2023-4-17': 'Shab-e-Qadr',
-                '2024-4-5': 'Shab-e-Qadr',
-                '2025-3-26': 'Shab-e-Qadr',
-                '2026-3-15': 'Shab-e-Qadr',
-                '2027-3-4': 'Shab-e-Qadr',
-                '2028-2-22': 'Shab-e-Qadr',
-                '2029-2-11': 'Shab-e-Qadr',
-                '2030-2-1': 'Shab-e-Qadr',
-                // Eid-e-Miladunnabi
-                '2020-10-29': 'Eid-e-Miladunnabi',
-                '2021-10-19': 'Eid-e-Miladunnabi',
-                '2022-10-8': 'Eid-e-Miladunnabi',
-                '2023-9-27': 'Eid-e-Miladunnabi',
-                '2024-9-16': 'Eid-e-Miladunnabi',
-                '2025-9-5': 'Eid-e-Miladunnabi',
-                '2026-8-26': 'Eid-e-Miladunnabi',
-                '2027-8-15': 'Eid-e-Miladunnabi',
-                '2028-8-4': 'Eid-e-Miladunnabi',
-                '2029-7-24': 'Eid-e-Miladunnabi',
-                '2030-7-13': 'Eid-e-Miladunnabi',
-                // Lailatul Qadr
                 '2020-5-19': 'Lailatul Qadr',
                 '2021-5-8': 'Lailatul Qadr',
                 '2022-4-28': 'Lailatul Qadr',
@@ -958,17 +1113,18 @@
                 '2027-3-4': 'Lailatul Qadr',
                 '2028-2-22': 'Lailatul Qadr',
                 '2029-2-11': 'Lailatul Qadr',
-                '2030-2-1': 'Lailatul Qadr'
-            },
-            // Bangla Cultural Festivals
-            bangla: {
-                '1-1': 'Pohela Boishakh',
-                '1-14': 'Chaitra Sankranti',
-                '5-15': 'Noboanna',
-                '6-1': 'Hal Khata',
-                '8-15': 'Prabarana Purnima',
-                '11-8': 'Bijoya Dashami',
-                '12-15': 'Poush Parbon'
+                '2030-2-1': 'Lailatul Qadr',
+                '2020-10-29': 'Eid-e-Miladunnabi',
+                '2021-10-19': 'Eid-e-Miladunnabi',
+                '2022-10-8': 'Eid-e-Miladunnabi',
+                '2023-9-27': 'Eid-e-Miladunnabi',
+                '2024-9-16': 'Eid-e-Miladunnabi',
+                '2025-9-5': 'Eid-e-Miladunnabi',
+                '2026-8-26': 'Eid-e-Miladunnabi',
+                '2027-8-15': 'Eid-e-Miladunnabi',
+                '2028-8-4': 'Eid-e-Miladunnabi',
+                '2029-7-24': 'Eid-e-Miladunnabi',
+                '2030-7-13': 'Eid-e-Miladunnabi'
             }
         };
 
@@ -981,12 +1137,10 @@
             return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
         }
 
-        // Approximate Hijri Date Calculation (Umm al-Qura approximation)
         function gregorianToHijri(date) {
             const gd = date.getDate();
             const gm = date.getMonth() + 1;
             const gy = date.getFullYear();
-            
             let jd;
             if ((gy > 1582) || ((gy === 1582) && (gm > 10)) || ((gy === 1582) && (gm === 10) && (gd > 14))) {
                 jd = ((1461 * (gy + 4800 + ((gm - 14) / 12 | 0))) / 4 | 0) +
@@ -997,7 +1151,6 @@
                 jd = 367 * gy - ((7 * (gy + 5001 + ((gm - 9) / 7 | 0))) / 4 | 0) +
                      ((275 * gm) / 9 | 0) + gd + 1729777;
             }
-            
             const l = jd - 1948440 + 10632;
             const n = ((l - 1) / 10631 | 0);
             const r = l - 10631 * n + 354;
@@ -1005,39 +1158,30 @@
             const d = r - ((29 * j) / 29 | 0);
             const m = ((11 * j + 14) / 29 | 0);
             const y = 30 * n + j - 30;
-            
             return { day: d, month: m, year: y };
         }
 
-        // Approximate Bangla Date (Bangladesh Calendar)
         function gregorianToBangla(date) {
             const gy = date.getFullYear();
             const gm = date.getMonth() + 1;
             const gd = date.getDate();
-            
             let by, bm, bd;
-            
             if (gm < 4 || (gm === 4 && gd < 14)) {
                 by = gy - 594;
             } else {
                 by = gy - 593;
             }
-            
             const banglaMonthStart = [
                 [4, 14], [5, 15], [6, 15], [7, 16], [8, 16], [9, 16],
                 [10, 17], [11, 16], [12, 16], [1, 14], [2, 13], [3, 14]
             ];
-            
-            let dayCount = 0;
             let found = false;
-            
             for (let i = 0; i < 12; i++) {
                 const [sm, sd] = banglaMonthStart[i];
                 let startDate = new Date(gy, sm - 1, sd);
                 if (sm === 1 || sm === 2 || sm === 3) {
                     startDate = new Date(gy + 1, sm - 1, sd);
                 }
-                
                 let nextStart;
                 if (i < 11) {
                     const [nsm, nsd] = banglaMonthStart[i + 1];
@@ -1048,7 +1192,6 @@
                 } else {
                     nextStart = new Date(gy + 1, 4, 14);
                 }
-                
                 if (date >= startDate && date < nextStart) {
                     bm = i;
                     bd = Math.floor((date - startDate) / (1000 * 60 * 60 * 24)) + 1;
@@ -1056,12 +1199,10 @@
                     break;
                 }
             }
-            
             if (!found) {
                 bm = 0;
                 bd = 1;
             }
-            
             return { day: bd, month: bm, year: by };
         }
 
@@ -1072,24 +1213,16 @@
             const key = `${m}-${d}`;
             const fullKey = `${y}-${m}-${d}`;
             const dayOfWeek = date.getDay();
-            
             let result = [];
-            
-            // Weekly holiday (Friday)
             if (dayOfWeek === 5) {
                 result.push({ name: 'Weekly Holiday (Friday)', type: 'Weekly' });
             }
-            
-            // Annual fixed holidays
             if (holidays.annual[key]) {
                 result = result.concat(holidays.annual[key]);
             }
-            
-            // Islamic holidays
             if (holidays.islamic[fullKey]) {
                 result.push({ name: holidays.islamic[fullKey], type: 'Islamic' });
             }
-            
             return result;
         }
 
@@ -1127,17 +1260,13 @@
         function updateDateDisplay() {
             const hijri = gregorianToHijri(selectedDate);
             const bangla = gregorianToBangla(selectedDate);
-            
-            document.getElementById('mainDate').textContent = 
+            document.getElementById('mainDate').textContent =
                 `${englishDays[selectedDate.getDay()]}, ${englishMonths[selectedDate.getMonth()]} ${selectedDate.getDate()}, ${selectedDate.getFullYear()}`;
-            
-            document.getElementById('gregDate').textContent = 
+            document.getElementById('gregDate').textContent =
                 `${selectedDate.getDate()} ${englishMonths[selectedDate.getMonth()].substring(0,3)} ${selectedDate.getFullYear()}`;
-            
-            document.getElementById('banglaDate').textContent = 
+            document.getElementById('banglaDate').textContent =
                 `${toBanglaNumber(bangla.day)} ${banglaMonths[bangla.month]}, ${toBanglaNumber(bangla.year)}`;
-            
-            document.getElementById('hijriDate').textContent = 
+            document.getElementById('hijriDate').textContent =
                 `${hijri.day} ${hijriMonths[hijri.month]} ${hijri.year}H`;
         }
 
@@ -1155,36 +1284,26 @@
         function renderMonthly() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            
             document.getElementById('monthYear').textContent = `${englishMonths[month]} ${year}`;
-            
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const daysInPrevMonth = new Date(year, month, 0).getDate();
-            
             const grid = document.getElementById('daysGrid');
             grid.innerHTML = '';
-            
-            // Previous month days
             for (let i = firstDay - 1; i >= 0; i--) {
                 const day = daysInPrevMonth - i;
                 const cell = createDayCell(day, true);
                 grid.appendChild(cell);
             }
-            
-            // Current month days
             const today = new Date();
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
                 const isToday = date.toDateString() === today.toDateString();
                 const holidayList = getHoliday(date);
                 const isSelected = date.toDateString() === selectedDate.toDateString();
-                
                 const cell = createDayCell(day, false, isToday, holidayList, date, isSelected);
                 grid.appendChild(cell);
             }
-            
-            // Next month days
             const totalCells = grid.children.length;
             const remaining = 42 - totalCells;
             for (let day = 1; day <= remaining; day++) {
@@ -1200,73 +1319,57 @@
             if (isToday) cell.classList.add('today');
             if (holidays.length > 0) cell.classList.add('holiday');
             if (isSelected) cell.classList.add('selected');
-            
             const num = document.createElement('div');
             num.className = 'day-num';
             num.textContent = day;
             cell.appendChild(num);
-            
             if (date && !otherMonth) {
                 const bangla = gregorianToBangla(date);
                 const hijri = gregorianToHijri(date);
-                
                 const sub = document.createElement('div');
                 sub.className = 'day-sub';
                 sub.textContent = toBanglaNumber(bangla.day);
                 cell.appendChild(sub);
-                
                 const subAr = document.createElement('div');
                 subAr.className = 'day-sub ar';
                 subAr.textContent = hijri.day;
                 cell.appendChild(subAr);
-                
                 if (holidays.length > 0) {
                     const badge = document.createElement('div');
                     badge.className = 'holiday-badge';
                     cell.appendChild(badge);
-                    
                     cell.title = holidays.map(h => h.name).join(', ');
                 }
-                
                 cell.onclick = () => {
                     selectedDate = new Date(date);
                     updateDateDisplay();
                     renderAll();
                 };
             }
-            
             return cell;
         }
 
         function renderWeekly() {
             const startOfWeek = new Date(currentDate);
             startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
-            
             const endOfWeek = new Date(startOfWeek);
             endOfWeek.setDate(startOfWeek.getDate() + 6);
-            
-            document.getElementById('weekRange').textContent = 
+            document.getElementById('weekRange').textContent =
                 `${englishMonths[startOfWeek.getMonth()]} ${startOfWeek.getDate()} - ${englishMonths[endOfWeek.getMonth()]} ${endOfWeek.getDate()}, ${endOfWeek.getFullYear()}`;
-            
             const container = document.getElementById('weekRow');
             container.innerHTML = '';
-            
             const today = new Date();
-            
             for (let i = 0; i < 7; i++) {
                 const date = new Date(startOfWeek);
                 date.setDate(startOfWeek.getDate() + i);
-                
                 const isToday = date.toDateString() === today.toDateString();
                 const holidays = getHoliday(date);
                 const bangla = gregorianToBangla(date);
                 const hijri = gregorianToHijri(date);
-                
                 const card = document.createElement('div');
                 card.className = 'week-day-card';
                 if (isToday) card.classList.add('today');
                 if (holidays.length > 0) card.classList.add('holiday');
-                
                 card.innerHTML = `
                     <div class="week-day-name">${englishDays[i]}</div>
                     <div class="week-day-num">${date.getDate()}</div>
@@ -1274,12 +1377,10 @@
                     <div class="week-day-sub ar">${hijri.day} ${hijriMonths[hijri.month].substring(0,3)}</div>
                     ${holidays.length > 0 ? `<div class="week-holiday-name">${holidays[0].name}</div>` : ''}
                 `;
-                
                 card.onclick = () => {
                     selectedDate = new Date(date);
                     updateDateDisplay();
                 };
-                
                 container.appendChild(card);
             }
         }
@@ -1288,44 +1389,34 @@
             const year = currentDate.getFullYear();
             const container = document.getElementById('yearGrid');
             container.innerHTML = '';
-            
             for (let m = 0; m < 12; m++) {
                 const card = document.createElement('div');
                 card.className = 'month-card';
-                
                 const header = document.createElement('div');
                 header.className = 'month-card-header';
                 header.textContent = englishMonths[m];
                 card.appendChild(header);
-                
                 const daysContainer = document.createElement('div');
                 daysContainer.className = 'month-card-days';
-                
                 const firstDay = new Date(year, m, 1).getDay();
                 const daysInMonth = new Date(year, m + 1, 0).getDate();
                 const today = new Date();
-                
-                // Empty cells
                 for (let i = 0; i < firstDay; i++) {
                     const empty = document.createElement('div');
                     empty.className = 'mc-day';
                     daysContainer.appendChild(empty);
                 }
-                
                 for (let d = 1; d <= daysInMonth; d++) {
                     const date = new Date(year, m, d);
                     const dayEl = document.createElement('div');
                     dayEl.className = 'mc-day';
-                    
                     if (date.toDateString() === today.toDateString()) {
                         dayEl.classList.add('today');
                     }
-                    
                     if (isHoliday(date)) {
                         dayEl.classList.add('holiday');
                         dayEl.title = getHoliday(date).map(h => h.name).join(', ');
                     }
-                    
                     dayEl.textContent = d;
                     dayEl.onclick = () => {
                         currentDate = new Date(year, m, d);
@@ -1333,10 +1424,8 @@
                         setView('monthly');
                         updateDateDisplay();
                     };
-                    
                     daysContainer.appendChild(dayEl);
                 }
-                
                 card.appendChild(daysContainer);
                 container.appendChild(card);
             }
@@ -1345,12 +1434,10 @@
         function renderHolidays() {
             const container = document.getElementById('holidayList');
             container.innerHTML = '';
-            
             const upcoming = [];
             const today = new Date();
             const endDate = new Date(today);
             endDate.setMonth(today.getMonth() + 3);
-            
             for (let d = new Date(today); d <= endDate; d.setDate(d.getDate() + 1)) {
                 const h = getHoliday(d);
                 if (h.length > 0) {
@@ -1363,7 +1450,6 @@
                     });
                 }
             }
-            
             upcoming.slice(0, 10).forEach(h => {
                 const item = document.createElement('div');
                 item.className = 'holiday-item';
@@ -1376,7 +1462,6 @@
                 `;
                 container.appendChild(item);
             });
-            
             if (upcoming.length === 0) {
                 container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:20px;">No upcoming holidays in the next 3 months</div>';
             }
@@ -1392,14 +1477,11 @@
         // ==================== NAVIGATION ====================
         function setView(view) {
             currentView = view;
-            
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            
             document.getElementById('monthlyView').style.display = view === 'monthly' ? 'block' : 'none';
             document.getElementById('weeklyView').style.display = view === 'weekly' ? 'block' : 'none';
             document.getElementById('yearlyView').style.display = view === 'yearly' ? 'block' : 'none';
-            
             renderAll();
         }
 
@@ -1474,7 +1556,6 @@
             renderWeekdays();
             updateDateDisplay();
             renderAll();
-            
             setTimeout(() => {
                 document.getElementById('loading').classList.add('hidden');
             }, 1500);
