@@ -1,0 +1,11 @@
+# secrets
+.env
+
+# agent working files
+workspace/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
