@@ -10,29 +10,32 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif;display:flex;flex-direction:column;height:100dvh}
 header{padding:10px 14px;border-bottom:1px solid var(--bd)}
-header b{font-size:18px}
+header b{font-size:18px} #tok{float:right;font-size:12px;color:var(--mut)}
 details{margin-top:6px;font-size:14px}
-details input{width:100%;margin:4px 0;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--fg)}
+details input[type=password],details input[type=text],details input[type=number]{width:100%;margin:4px 0;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--fg)}
 #log{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
-.m{padding:10px 12px;border-radius:12px;white-space:pre-wrap;word-break:break-word;max-width:92%}
-.u{background:var(--me);align-self:flex-end}
-.a{background:var(--card);align-self:flex-start}
-.s{font-size:13px;color:var(--mut);align-self:flex-start;padding:0 4px}
+.m{padding:10px 12px;border-radius:12px;white-space:pre-wrap;word-break:break-word;max-width:94%}
+.u{background:var(--me);align-self:flex-end}.a{background:var(--card);align-self:flex-start}
+.s{font-size:13px;color:var(--mut);align-self:flex-start;padding:0 4px;white-space:pre-wrap;word-break:break-word}
+pre{background:rgba(127,127,127,.18);padding:8px;border-radius:8px;overflow-x:auto;margin:6px 0}
+code{background:rgba(127,127,127,.18);padding:0 4px;border-radius:4px}
 form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--bd)}
 textarea{flex:1;resize:none;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--fg);font:inherit}
 button{padding:0 16px;border:0;border-radius:10px;background:var(--acc);color:#fff;font:inherit}
 button:disabled{opacity:.5}
-.x{background:var(--card);color:var(--fg);border:1px solid var(--bd);padding:6px 10px;font-size:13px}
+.x{background:var(--card);color:var(--fg);border:1px solid var(--bd);padding:6px 10px;font-size:13px;margin:2px 0}
+#stop{background:#c0392b;display:none}
 </style>
 </head>
 <body>
 <header>
-  <b>Dolbol Agent</b>
+  <b>Dolbol Agent</b><span id="tok"></span>
   <details>
-    <summary>সেটিং (API key, মডেল)</summary>
-    <input id="key" type="password" placeholder="Anthropic API key (শুধু এই ব্রাউজারে সেভ হয়)">
-    <input id="model" placeholder="মডেল" value="claude-sonnet-5-5">
+    <summary>সেটিং</summary>
+    <input id="key" type="password" autocomplete="off" placeholder="Anthropic API key (শুধু এই ব্রাউজারে সেভ হয়)">
+    <input id="model" type="text" placeholder="মডেল">
     <input id="max" type="number" min="1" max="20" placeholder="সর্বোচ্চ সহকারী (ডিফল্ট ৮)">
+    <label><input id="web" type="checkbox"> ওয়েব সার্চ চালু (অ্যাকাউন্টে enabled থাকতে হবে)</label><br>
     <button class="x" type="button" id="reset">নতুন কথোপকথন</button>
     <button class="x" type="button" id="files">workspace ফাইল দেখুন</button>
   </details>
@@ -41,27 +44,33 @@ button:disabled{opacity:.5}
 <form id="f">
   <textarea id="q" rows="2" placeholder="কাজ লিখুন..."></textarea>
   <button id="go">পাঠান</button>
+  <button id="stop" type="button">থামান</button>
 </form>
 <script>
 const $=s=>document.querySelector(s);
-const MAX_STEPS=12;
-let spawned=0, history=[];
-const ws=JSON.parse(localStorage.getItem('ws')||'{}');           // ভার্চুয়াল workspace
+const MAX_STEPS=12, tok={i:0,o:0};
+let spawned=0, history=[], ctrl=null;
+const ws=JSON.parse(localStorage.getItem('ws')||'{}');
 const saveWs=()=>localStorage.setItem('ws',JSON.stringify(ws));
 $('#key').value=localStorage.getItem('key')||'';
 $('#model').value=localStorage.getItem('model')||'claude-sonnet-5-5';
 $('#max').value=localStorage.getItem('max')||'';
+$('#web').checked=localStorage.getItem('web')==='1';
 ['key','model','max'].forEach(k=>$('#'+k).addEventListener('change',e=>localStorage.setItem(k,e.target.value.trim())));
+$('#web').addEventListener('change',e=>localStorage.setItem('web',e.target.checked?'1':'0'));
 const maxAsst=()=>parseInt($('#max').value)||8;
+const model=()=>$('#model').value.trim()||'claude-sonnet-5-5';
 
-function add(cls,text){const d=document.createElement('div');d.className='m '+cls;d.textContent=text;$('#log').append(d);d.scrollIntoView({block:'end'});return d}
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const md=t=>esc(t).replace(/```(?:\w*\n)?([\s\S]*?)```/g,'<pre>$1</pre>').replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>').replace(/^#{1,6} (.+)$/gm,'<b>$1</b>');
+function add(cls,text,html){const d=document.createElement('div');d.className='m '+cls;html?d.innerHTML=md(text):d.textContent=text;$('#log').append(d);d.scrollIntoView({block:'end'});return d}
 function log(label,msg){const d=document.createElement('div');d.className='s';d.textContent=`[${label}] ${msg}`;$('#log').append(d);d.scrollIntoView({block:'end'})}
 
 // ---------------- টুল
 const FUNCS={
   calculator:({expression})=>{if(!/^[\d+\-*/().%\s^e]+$/.test(expression))throw Error('invalid expression');return String(Function('"use strict";return ('+expression.replace(/\^/g,'**')+')')())},
   get_time:()=>new Date().toString(),
-  fetch_url:async({url})=>{if(!/^https?:\/\//.test(url))throw Error('only http/https');const r=await fetch(url);return (await r.text()).slice(0,10000)},
+  fetch_url:async({url})=>{if(!/^https?:\/\//.test(url))throw Error('only http/https');try{const r=await fetch(url,{signal:ctrl?.signal});return (await r.text()).slice(0,10000)}catch(e){throw Error('fetch failed (likely blocked by CORS): '+e.message)}},
   list_files:()=>Object.keys(ws).join('\n')||'(workspace is empty)',
   read_file:({path})=>{if(!(path in ws))throw Error('no such file');return ws[path].slice(0,10000)},
   write_file:({path,content})=>{ws[path]=content;saveWs();return `Wrote ${content.length} chars to ${path}`},
@@ -71,22 +80,22 @@ const FUNCS={
 };
 const NEEDS_APPROVAL=new Set(['write_file','run_js']);
 const sch=(p,r=[])=>({type:'object',properties:p,required:r});
-const S_='string';
+const T='string';
 const BASE=[
- {name:'calculator',description:"Evaluate arithmetic like '12*(3+4)/5'.",input_schema:sch({expression:{type:S_}},['expression'])},
+ {name:'calculator',description:"Evaluate arithmetic like '12*(3+4)/5'.",input_schema:sch({expression:{type:T}},['expression'])},
  {name:'get_time',description:'Current local date and time.',input_schema:sch({})},
- {name:'fetch_url',description:'Fetch a URL as text. Many sites block browser requests (CORS); prefer web_search if available.',input_schema:sch({url:{type:S_}},['url'])},
+ {name:'fetch_url',description:'Fetch a URL as text. Many sites block browser requests (CORS).',input_schema:sch({url:{type:T}},['url'])},
  {name:'list_files',description:'List files in the workspace.',input_schema:sch({})},
- {name:'read_file',description:'Read a workspace file.',input_schema:sch({path:{type:S_}},['path'])},
- {name:'write_file',description:'Create/overwrite a workspace file. Needs user approval.',input_schema:sch({path:{type:S_},content:{type:S_}},['path','content'])},
- {name:'run_js',description:'Run async JavaScript (use console.log or return a value). Needs user approval.',input_schema:sch({code:{type:S_}},['code'])}
+ {name:'read_file',description:'Read a workspace file.',input_schema:sch({path:{type:T}},['path'])},
+ {name:'write_file',description:'Create/overwrite a workspace file. Needs user approval.',input_schema:sch({path:{type:T},content:{type:T}},['path','content'])},
+ {name:'run_js',description:'Run async JavaScript (use console.log or return a value). Needs user approval.',input_schema:sch({code:{type:T}},['code'])}
 ];
 const WEB={type:'web_search_20250305',name:'web_search',max_uses:5};
-const ALL=[...BASE,WEB];
+const avail=()=>[...BASE,...($('#web').checked?[WEB]:[])];
 const SPAWN={name:'spawn_assistant',
  description:"Create a specialist sub-assistant for a self-contained sub-task and get its result. It does NOT see this chat, so 'task' must hold all context. Call several times in ONE turn to run assistants in parallel.",
- input_schema:sch({role:{type:S_,description:"e.g. 'researcher', 'coder', 'editor'"},instructions:{type:S_,description:'expertise, style, constraints'},task:{type:S_,description:'complete task + expected output format'},
-  tools:{type:'array',items:{type:S_,enum:ALL.map(t=>t.name)},description:'minimum tools needed'}},['role','instructions','task'])};
+ input_schema:sch({role:{type:T,description:"e.g. 'researcher', 'coder', 'editor'"},instructions:{type:T,description:'expertise, style, constraints'},task:{type:T,description:'complete task + expected output format'},
+  tools:{type:'array',items:{type:T},description:'tool names the assistant may use (minimum needed): calculator, get_time, fetch_url, list_files, read_file, write_file, run_js, web_search'}},['role','instructions','task'])};
 
 async function runTool(name,args,label,allowed){
   if(!allowed.has(name))return['Tool not available: '+name,true];
@@ -98,29 +107,41 @@ async function runTool(name,args,label,allowed){
 // ---------------- API ও লুপ
 async function api(body){
   const key=$('#key').value.trim(); if(!key)throw Error('আগে সেটিং-এ API key দিন');
-  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
-  const j=await r.json(); if(!r.ok)throw Error(j.error?.message||r.status); return j;
+  for(let t=0;t<4;t++){
+    let r;
+    try{r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',signal:ctrl.signal,headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)})}
+    catch(e){throw Error(e.name==='AbortError'?'থামানো হয়েছে':'নেটওয়ার্ক সমস্যা: '+e.message)}
+    const j=await r.json().catch(()=>({}));
+    if(r.ok){tok.i+=j.usage?.input_tokens||0;tok.o+=j.usage?.output_tokens||0;$('#tok').textContent=`টোকেন: ${tok.i} in / ${tok.o} out`;return j}
+    if([429,500,529].includes(r.status)&&t<3){await new Promise(s=>setTimeout(s,1500*2**t));continue}
+    throw Error(j.error?.message||'HTTP '+r.status);
+  }
 }
+const textOf=c=>c.filter(b=>b.type==='text').map(b=>b.text).join('');
 async function loop(system,messages,tools,label){
   const allowed=new Set(tools.map(t=>t.name));
   for(let step=1;step<=MAX_STEPS;step++){
-    const resp=await api({model:$('#model').value.trim()||'claude-sonnet-5-5',max_tokens:4000,system,tools,messages});
+    const resp=await api({model:model(),max_tokens:6000,system,tools,messages});
     messages.push({role:'assistant',content:resp.content});
     if(resp.stop_reason==='pause_turn')continue;
-    if(resp.stop_reason!=='tool_use')return resp.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    if(resp.stop_reason!=='tool_use')return textOf(resp.content)+(resp.stop_reason==='max_tokens'?'\n\n(উত্তর দৈর্ঘ্যের সীমায় কেটে গেছে)':'');
     const calls=resp.content.filter(b=>b.type==='tool_use');
     calls.forEach(c=>log(label,`ধাপ ${step}: ${c.name} ${JSON.stringify(c.input).slice(0,90)}`));
     const results=await Promise.all(calls.map(async c=>{const[out,err]=await runTool(c.name,c.input,label,allowed);return{type:'tool_result',tool_use_id:c.id,content:out,is_error:err}}));
     messages.push({role:'user',content:results});
   }
-  return '(ধাপের সীমায় কাজ শেষ হয়নি)';
+  // ধাপের সীমা শেষ: টুল ছাড়া সেরা উত্তর চাই
+  messages[messages.length-1].content.push({type:'text',text:'Step limit reached. Give your best final answer now from what you have. Do not call tools.'});
+  const resp=await api({model:model(),max_tokens:3000,system,tools,tool_choice:{type:'none'},messages});
+  messages.push({role:'assistant',content:resp.content});
+  return textOf(resp.content);
 }
 async function spawn({role,instructions,task,tools=[]}){
   if(spawned>=maxAsst())return[`Error: assistant limit reached (${maxAsst()}). Finish it yourself.`,true];
   const n=++spawned,label=`সহকারী#${n}:${String(role).slice(0,18)}`;
   log(label,'তৈরি হলো');
   const system=`You are a specialist assistant. Role: ${role}.\n${instructions}\n\nA coordinator created you for exactly one task. Work independently, use tools only if needed, and end with a clear, complete result (it is returned to the coordinator).`;
-  try{const r=await loop(system,[{role:'user',content:task}],ALL.filter(t=>tools.includes(t.name)),label);log(label,'কাজ শেষ');return[r,false]}
+  try{const r=await loop(system,[{role:'user',content:task}],avail().filter(t=>tools.includes(t.name)),label);log(label,'কাজ শেষ');return[r,false]}
   catch(e){return['Assistant failed: '+e.message,true]}
 }
 
@@ -135,16 +156,17 @@ const ORCH=()=>`You are a capable personal assistant agent (the coordinator).
 // ---------------- UI
 $('#f').addEventListener('submit',async e=>{
   e.preventDefault();
-  const text=$('#q').value.trim(); if(!text)return;
-  $('#q').value=''; $('#go').disabled=true; spawned=0;
-  add('u',text); history.push({role:'user',content:text});
+  const text=$('#q').value.trim(); if(!text||$('#go').disabled)return;
+  $('#q').value=''; $('#go').disabled=true; $('#stop').style.display='block'; spawned=0; ctrl=new AbortController();
+  add('u',text);
+  const keep=history.length; history.push({role:'user',content:text});
   const wait=add('a','ভাবছি...');
-  try{wait.textContent=await loop(ORCH(),history,[...ALL,SPAWN],'মূল')}
-  catch(err){wait.textContent='Error: '+err.message;history.pop()}
-  $('#go').disabled=false;
+  try{const ans=await loop(ORCH(),history,[...avail(),SPAWN],'মূল');wait.remove();add('a',ans,true)}
+  catch(err){history.length=keep;wait.textContent='Error: '+err.message}   // ভাঙা ইতিহাস বাদ দিয়ে আবার চেষ্টা করা যাবে
+  $('#go').disabled=false; $('#stop').style.display='none';
 });
-$('#q').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.ctrlKey)$('#f').requestSubmit()});
-$('#reset').onclick=()=>{history=[];$('#log').innerHTML=''};
+$('#stop').onclick=()=>ctrl&&ctrl.abort();
+$('#reset').onclick=()=>{history=[];$('#log').innerHTML='';tok.i=tok.o=0;$('#tok').textContent=''};
 $('#files').onclick=()=>add('s',Object.keys(ws).length?Object.entries(ws).map(([k,v])=>`--- ${k} ---\n${v}`).join('\n\n'):'(workspace খালি)');
 </script>
 </body>
