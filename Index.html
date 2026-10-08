@@ -1,173 +1,489 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dolbol Agent</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 পড়ার খাতা — সবার জন্য</title>
 <style>
-:root{--bg:#fff;--fg:#1a1a1a;--mut:#666;--card:#f2f3f5;--me:#d9e8ff;--acc:#2563eb;--bd:#ddd}
-@media(prefers-color-scheme:dark){:root{--bg:#15171a;--fg:#e8e8e8;--mut:#9a9a9a;--card:#23262b;--me:#1e3a64;--bd:#333}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif;display:flex;flex-direction:column;height:100dvh}
-header{padding:10px 14px;border-bottom:1px solid var(--bd)}
-header b{font-size:18px} #tok{float:right;font-size:12px;color:var(--mut)}
-details{margin-top:6px;font-size:14px}
-details input[type=password],details input[type=text],details input[type=number]{width:100%;margin:4px 0;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--fg)}
-#log{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
-.m{padding:10px 12px;border-radius:12px;white-space:pre-wrap;word-break:break-word;max-width:94%}
-.u{background:var(--me);align-self:flex-end}.a{background:var(--card);align-self:flex-start}
-.s{font-size:13px;color:var(--mut);align-self:flex-start;padding:0 4px;white-space:pre-wrap;word-break:break-word}
-pre{background:rgba(127,127,127,.18);padding:8px;border-radius:8px;overflow-x:auto;margin:6px 0}
-code{background:rgba(127,127,127,.18);padding:0 4px;border-radius:4px}
-form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--bd)}
-textarea{flex:1;resize:none;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--fg);font:inherit}
-button{padding:0 16px;border:0;border-radius:10px;background:var(--acc);color:#fff;font:inherit}
-button:disabled{opacity:.5}
-.x{background:var(--card);color:var(--fg);border:1px solid var(--bd);padding:6px 10px;font-size:13px;margin:2px 0}
-#stop{background:#c0392b;display:none}
+  :root{
+    --bg:#0f172a; --card:#1e293b; --card2:#273449; --text:#e2e8f0;
+    --muted:#94a3b8; --accent:#38bdf8; --accent2:#818cf8; --danger:#f87171;
+    --ok:#34d399; --border:#334155;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Hind Siliguri','Noto Sans Bengali',Arial,sans-serif;}
+  body{background:var(--bg);color:var(--text);min-height:100vh;}
+  header{background:linear-gradient(135deg,#1e293b,#0f172a);border-bottom:1px solid var(--border);
+    padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  header h1{font-size:1.4rem;}
+  header h1 span{color:var(--accent);}
+  .btn{border:none;border-radius:10px;padding:10px 18px;font-size:.95rem;cursor:pointer;
+    transition:.2s;font-weight:600;}
+  .btn-primary{background:var(--accent);color:#082f49;}
+  .btn-primary:hover{background:#7dd3fc;}
+  .btn-ghost{background:var(--card2);color:var(--text);border:1px solid var(--border);}
+  .btn-ghost:hover{border-color:var(--accent);}
+  .btn-danger{background:var(--danger);color:#450a0a;}
+  .btn-warn{background:#fbbf24;color:#422006;}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 16px 80px;}
+  .search-box{width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--border);
+    background:var(--card);color:var(--text);font-size:1rem;margin-bottom:14px;outline:none;}
+  .search-box:focus{border-color:var(--accent);}
+  .status{font-size:.8rem;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;}
+  .dot.on{background:var(--ok);}
+  .setup-banner{background:linear-gradient(135deg,#3b2f0b,#1e293b);border:1px solid #a16207;
+    border-radius:14px;padding:18px;margin-bottom:18px;display:none;}
+  .setup-banner h3{color:#fbbf24;margin-bottom:8px;font-size:1rem;}
+  .setup-banner p{font-size:.85rem;color:#fde68a;line-height:1.7;margin-bottom:12px;}
+  .topic{background:var(--card);border:1px solid var(--border);border-radius:14px;
+    margin-bottom:18px;overflow:hidden;}
+  .topic-head{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;
+    background:var(--card2);cursor:pointer;user-select:none;}
+  .topic-head h2{font-size:1.1rem;}
+  .topic-head .count{font-size:.8rem;color:var(--muted);margin-left:8px;}
+  .topic-body{padding:12px 18px 18px;display:none;}
+  .topic.open .topic-body{display:block;}
+  .note{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;
+    margin-bottom:8px;background:#16213a;border:1px solid #24314d;flex-wrap:wrap;}
+  .note .icon{font-size:1.4rem;}
+  .note .info{flex:1;min-width:180px;}
+  .note .info b{display:block;font-size:.98rem;}
+  .note .info small{color:var(--muted);font-size:.78rem;}
+  .empty{color:var(--muted);text-align:center;padding:12px;font-size:.9rem;}
+  .modal-bg{position:fixed;inset:0;background:rgba(2,6,23,.85);display:none;
+    align-items:center;justify-content:center;z-index:100;padding:16px;}
+  .modal-bg.show{display:flex;}
+  .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;
+    padding:24px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;}
+  .modal h3{margin-bottom:16px;font-size:1.1rem;}
+  .modal label{display:block;font-size:.85rem;color:var(--muted);margin:12px 0 6px;}
+  .modal input[type=text],.modal input[type=password],.modal textarea,.modal select{
+    width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);
+    background:#0f172a;color:var(--text);outline:none;font-size:.95rem;}
+  .modal textarea{min-height:110px;resize:vertical;}
+  .modal input:focus,.modal textarea:focus{border-color:var(--accent);}
+  .modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap;}
+  .drop{border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;
+    color:var(--muted);font-size:.85rem;cursor:pointer;margin-top:6px;}
+  .drop:hover{border-color:var(--accent);color:var(--accent);}
+  .msg{font-size:.85rem;margin-top:10px;min-height:1.2em;}
+  .msg.err{color:var(--danger);}
+  .msg.ok{color:var(--ok);}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--card);border:1px solid var(--accent);padding:12px 22px;border-radius:12px;
+    transition:.3s;opacity:0;z-index:200;max-width:90vw;text-align:center;}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+  .admin-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+  .cloud-id{background:#0f172a;border:1px solid var(--accent);border-radius:10px;
+    padding:12px;font-family:monospace;color:#7dd3fc;font-size:1rem;text-align:center;
+    margin:10px 0;word-break:break-all;}
+  @media(max-width:600px){header h1{font-size:1.15rem}}
 </style>
+<base target="_blank">
 </head>
 <body>
+
 <header>
-  <b>Dolbol Agent</b><span id="tok"></span>
-  <details>
-    <summary>সেটিং</summary>
-    <input id="key" type="password" autocomplete="off" placeholder="Anthropic API key (শুধু এই ব্রাউজারে সেভ হয়)">
-    <input id="model" type="text" placeholder="মডেল">
-    <input id="max" type="number" min="1" max="20" placeholder="সর্বোচ্চ সহকারী (ডিফল্ট ৮)">
-    <label><input id="web" type="checkbox"> ওয়েব সার্চ চালু (অ্যাকাউন্টে enabled থাকতে হবে)</label><br>
-    <button class="x" type="button" id="reset">নতুন কথোপকথন</button>
-    <button class="x" type="button" id="files">workspace ফাইল দেখুন</button>
-  </details>
+  <h1>📚 পড়ার <span>খাতা</span></h1>
+  <div>
+    <button class="btn btn-ghost" onclick="refreshCloud(true)">🔄 রিফ্রেশ</button>
+    <button class="btn btn-primary" onclick="openAdmin()">🔐 অ্যাডমিন</button>
+  </div>
 </header>
-<div id="log"></div>
-<form id="f">
-  <textarea id="q" rows="2" placeholder="কাজ লিখুন..."></textarea>
-  <button id="go">পাঠান</button>
-  <button id="stop" type="button">থামান</button>
-</form>
+
+<div class="wrap">
+  <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">লোড হচ্ছে...</span></div>
+
+  <div class="setup-banner" id="setupBanner">
+    <h3>☁️ প্রথমবার সেটআপ (শুধু একবার করতে হবে)</h3>
+    <p>১️⃣ নিচের বাটনে ক্লিক করো → অ্যাডমিন পাসওয়ার্ড দাও<br>
+       ২️⃣ তোমার একটা <b>Cloud ID</b> পাবে — সেটা কপি করে নাও<br>
+       ৩️⃣ HTML ফাইলের কোডে <b>CLOUD_ID</b> লেখা জায়গায় বসাও, সেভ করো<br>
+       ৪️⃣ তারপর Netlify/GitHub-এ আপলোড করে লিংক সবাইকে দাও</p>
+    <button class="btn btn-warn" onclick="startSetup()">☁️ ক্লাউড সংযোগ তৈরি করুন</button>
+  </div>
+
+  <input class="search-box" id="search" placeholder="🔍 নোট বা টপিক খুঁজুন..." oninput="render()">
+  <div class="admin-bar" id="adminBar" style="display:none">
+    <button class="btn btn-primary" onclick="openTopicModal()">➕ নতুন টপিক</button>
+    <button class="btn btn-ghost" onclick="refreshCloud(true)">☁️ ক্লাউড থেকে আনুন</button>
+  </div>
+  <div id="topics"></div>
+</div>
+
+<!-- পাসওয়ার্ড মোডাল -->
+<div class="modal-bg" id="pwModalBg">
+  <div class="modal">
+    <h3 id="pwTitle">পাসওয়ার্ড দিন</h3>
+    <label>পাসওয়ার্ড</label>
+    <input type="password" id="pwInput" onkeydown="if(event.key==='Enter')pwSubmit()">
+    <div class="msg" id="pwMsg"></div>
+    <div class="row">
+      <button class="btn btn-ghost" onclick="closeModal('pwModalBg')">বাতিল</button>
+      <button class="btn btn-primary" onclick="pwSubmit()">ঠিক আছে</button>
+    </div>
+  </div>
+</div>
+
+<!-- টপিক মোডাল -->
+<div class="modal-bg" id="topicModalBg">
+  <div class="modal">
+    <h3>➕ নতুন টপিক যোগ করুন</h3>
+    <label>টপিকের নাম</label>
+    <input type="text" id="topicName" placeholder="যেমন: গণিত, পদার্থবিজ্ঞান...">
+    <div class="row">
+      <button class="btn btn-ghost" onclick="closeModal('topicModalBg')">বাতিল</button>
+      <button class="btn btn-primary" onclick="addTopic()">যোগ করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- নোট আপলোড মোডাল -->
+<div class="modal-bg" id="noteModalBg">
+  <div class="modal">
+    <h3>📝 নতুন নোট আপলোড</h3>
+    <label>নোটের ধরন</label>
+    <select id="noteType" onchange="toggleNoteType()">
+      <option value="text">✍️ লেখা (টেক্সট নোট)</option>
+      <option value="file">📎 ফাইল (PDF / যেকোনো ফাইল)</option>
+    </select>
+    <label>নোটের শিরোনাম</label>
+    <input type="text" id="noteTitle" placeholder="যেমন: অ্যালজেবরা সূত্র">
+    <div id="textArea">
+      <label>নোটের লেখা</label>
+      <textarea id="noteText" placeholder="এখানে লিখুন..."></textarea>
+    </div>
+    <div id="fileArea" style="display:none">
+      <label>ফাইল নির্বাচন</label>
+      <div class="drop" onclick="document.getElementById('noteFile').click()">
+        📂 এখানে ক্লিক করে ফাইল বাছুন<br><small id="fileLimitText">PDF, DOCX, ছবি ইত্যাদি</small>
+      </div>
+      <input type="file" id="noteFile" style="display:none" onchange="fileChosen(this)">
+      <div class="msg" id="fileMsg"></div>
+    </div>
+    <div class="row">
+      <button class="btn btn-ghost" onclick="closeModal('noteModalBg')">বাতিল</button>
+      <button class="btn btn-primary" onclick="addNote()">☁️ ক্লাউডে সেভ করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- সেটআপ সম্পন্ন মোডাল -->
+<div class="modal-bg" id="doneModalBg">
+  <div class="modal">
+    <h3>🎉 ক্লাউড তৈরি হয়েছে!</h3>
+    <p style="font-size:.9rem;color:var(--muted);line-height:1.7">
+      নিচের <b>Cloud ID</b> টা কপি করে HTML ফাইলের কোডে
+      <b style="color:#7dd3fc">const CLOUD_ID = ""</b> লেখা জায়গায় বসাও
+      (উদ্ধরণচিহ্নের ভেতরে), তারপর ফাইল সেভ করে Netlify/GitHub-এ আপলোড করো।
+    </p>
+    <div class="cloud-id" id="newCloudId"></div>
+    <div class="row">
+      <button class="btn btn-ghost" onclick="copyCloudId()">📋 কপি করুন</button>
+      <button class="btn btn-primary" onclick="closeModal('doneModalBg')">ঠিক আছে</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-const $=s=>document.querySelector(s);
-const MAX_STEPS=12, tok={i:0,o:0};
-let spawned=0, history=[], ctrl=null;
-const ws=JSON.parse(localStorage.getItem('ws')||'{}');
-const saveWs=()=>localStorage.setItem('ws',JSON.stringify(ws));
-$('#key').value=localStorage.getItem('key')||'';
-$('#model').value=localStorage.getItem('model')||'claude-sonnet-5-5';
-$('#max').value=localStorage.getItem('max')||'';
-$('#web').checked=localStorage.getItem('web')==='1';
-['key','model','max'].forEach(k=>$('#'+k).addEventListener('change',e=>localStorage.setItem(k,e.target.value.trim())));
-$('#web').addEventListener('change',e=>localStorage.setItem('web',e.target.checked?'1':'0'));
-const maxAsst=()=>parseInt($('#max').value)||8;
-const model=()=>$('#model').value.trim()||'claude-sonnet-5-5';
+/* ============================================================
+   ⚙️ সেটিংস
+   ============================================================ */
+const ADMIN_PASSWORD    = "admin123";      // আপলোড/ডিলিটের পাসওয়ার্ড
+const DOWNLOAD_PASSWORD = "download123";   // ডাউনলোডের পাসওয়ার্ড
+const CLOUD_ID = "";   // ← সেটআপের পর তোমার Cloud ID এখানে বসাও
 
-const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const md=t=>esc(t).replace(/```(?:\w*\n)?([\s\S]*?)```/g,'<pre>$1</pre>').replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>').replace(/^#{1,6} (.+)$/gm,'<b>$1</b>');
-function add(cls,text,html){const d=document.createElement('div');d.className='m '+cls;html?d.innerHTML=md(text):d.textContent=text;$('#log').append(d);d.scrollIntoView({block:'end'});return d}
-function log(label,msg){const d=document.createElement('div');d.className='s';d.textContent=`[${label}] ${msg}`;$('#log').append(d);d.scrollIntoView({block:'end'})}
+const API_BASE = "https://jsonblob.com/api/jsonBlob/";
+const LOCAL_KEY = "studyVaultCache_v2";
 
-// ---------------- টুল
-const FUNCS={
-  calculator:({expression})=>{if(!/^[\d+\-*/().%\s^e]+$/.test(expression))throw Error('invalid expression');return String(Function('"use strict";return ('+expression.replace(/\^/g,'**')+')')())},
-  get_time:()=>new Date().toString(),
-  fetch_url:async({url})=>{if(!/^https?:\/\//.test(url))throw Error('only http/https');try{const r=await fetch(url,{signal:ctrl?.signal});return (await r.text()).slice(0,10000)}catch(e){throw Error('fetch failed (likely blocked by CORS): '+e.message)}},
-  list_files:()=>Object.keys(ws).join('\n')||'(workspace is empty)',
-  read_file:({path})=>{if(!(path in ws))throw Error('no such file');return ws[path].slice(0,10000)},
-  write_file:({path,content})=>{ws[path]=content;saveWs();return `Wrote ${content.length} chars to ${path}`},
-  run_js:async({code})=>{const out=[];const c={log:(...a)=>out.push(a.join(' '))};
-    const r=await (new (Object.getPrototypeOf(async function(){}).constructor)('console',code))(c);
-    if(r!==undefined)out.push(String(r));return out.join('\n').slice(0,6000)||'(no output)'}
-};
-const NEEDS_APPROVAL=new Set(['write_file','run_js']);
-const sch=(p,r=[])=>({type:'object',properties:p,required:r});
-const T='string';
-const BASE=[
- {name:'calculator',description:"Evaluate arithmetic like '12*(3+4)/5'.",input_schema:sch({expression:{type:T}},['expression'])},
- {name:'get_time',description:'Current local date and time.',input_schema:sch({})},
- {name:'fetch_url',description:'Fetch a URL as text. Many sites block browser requests (CORS).',input_schema:sch({url:{type:T}},['url'])},
- {name:'list_files',description:'List files in the workspace.',input_schema:sch({})},
- {name:'read_file',description:'Read a workspace file.',input_schema:sch({path:{type:T}},['path'])},
- {name:'write_file',description:'Create/overwrite a workspace file. Needs user approval.',input_schema:sch({path:{type:T},content:{type:T}},['path','content'])},
- {name:'run_js',description:'Run async JavaScript (use console.log or return a value). Needs user approval.',input_schema:sch({code:{type:T}},['code'])}
-];
-const WEB={type:'web_search_20250305',name:'web_search',max_uses:5};
-const avail=()=>[...BASE,...($('#web').checked?[WEB]:[])];
-const SPAWN={name:'spawn_assistant',
- description:"Create a specialist sub-assistant for a self-contained sub-task and get its result. It does NOT see this chat, so 'task' must hold all context. Call several times in ONE turn to run assistants in parallel.",
- input_schema:sch({role:{type:T,description:"e.g. 'researcher', 'coder', 'editor'"},instructions:{type:T,description:'expertise, style, constraints'},task:{type:T,description:'complete task + expected output format'},
-  tools:{type:'array',items:{type:T},description:'tool names the assistant may use (minimum needed): calculator, get_time, fetch_url, list_files, read_file, write_file, run_js, web_search'}},['role','instructions','task'])};
+/* ---------------- state ---------------- */
+let cloudId = CLOUD_ID || localStorage.getItem("sv_cloudId") || "";
+let topics = [];
+let isAdmin = false;
+let pendingAction = null;
+let currentTopicId = null;
+let chosenFile = null;
 
-async function runTool(name,args,label,allowed){
-  if(!allowed.has(name))return['Tool not available: '+name,true];
-  if(name==='spawn_assistant')return spawn(args);
-  if(NEEDS_APPROVAL.has(name)&&!confirm(`[${label}] ${name}\n\n`+Object.entries(args).map(([k,v])=>k+': '+String(v).slice(0,600)).join('\n')+'\n\nচালাবো?'))return['User denied this action.',true];
-  try{return[String(await FUNCS[name](args)),false]}catch(e){return['Error: '+e.message,true]}
+/* ---------------- helpers ---------------- */
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function setStatus(online, text){
+  document.getElementById('statusDot').className = 'dot' + (online ? ' on' : '');
+  document.getElementById('statusText').textContent = text;
 }
 
-// ---------------- API ও লুপ
-async function api(body){
-  const key=$('#key').value.trim(); if(!key)throw Error('আগে সেটিং-এ API key দিন');
-  for(let t=0;t<4;t++){
-    let r;
-    try{r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',signal:ctrl.signal,headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)})}
-    catch(e){throw Error(e.name==='AbortError'?'থামানো হয়েছে':'নেটওয়ার্ক সমস্যা: '+e.message)}
-    const j=await r.json().catch(()=>({}));
-    if(r.ok){tok.i+=j.usage?.input_tokens||0;tok.o+=j.usage?.output_tokens||0;$('#tok').textContent=`টোকেন: ${tok.i} in / ${tok.o} out`;return j}
-    if([429,500,529].includes(r.status)&&t<3){await new Promise(s=>setTimeout(s,1500*2**t));continue}
-    throw Error(j.error?.message||'HTTP '+r.status);
+/* ---------------- cloud ---------------- */
+async function refreshCloud(manual){
+  if (!cloudId){
+    // ক্লাউড না থাকলে লোকাল ক্যাশ দেখাও
+    try{ topics = JSON.parse(localStorage.getItem(LOCAL_KEY)) || seedData(); }catch(e){ topics = seedData(); }
+    setStatus(false, 'অফলাইন মোড — সেটআপ সম্পন্ন হয়নি');
+    document.getElementById('setupBanner').style.display = 'block';
+    render();
+    return;
+  }
+  if (manual) setStatus(true, 'ক্লাউড থেকে আনা হচ্ছে...');
+  try{
+    const r = await fetch(API_BASE + cloudId + "?t=" + Date.now());
+    if (!r.ok) throw new Error("fetch failed");
+    const data = await r.json();
+    topics = (data && data.topics) || [];
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(topics));
+    setStatus(true, '☁️ অনলাইন — সবার সাথে সিঙ্ক হচ্ছে (' + new Date().toLocaleTimeString('bn-BD') + ')');
+    document.getElementById('setupBanner').style.display = 'none';
+  }catch(e){
+    try{ topics = JSON.parse(localStorage.getItem(LOCAL_KEY)) || []; }catch(_){ topics = []; }
+    setStatus(false, '⚠️ সার্ভারে যোগাযোগ করা যায়নি — আগের ডেটা দেখানো হচ্ছে');
+  }
+  render();
+}
+
+async function saveCloud(){
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(topics));
+  if (!cloudId){ toast('⚠️ ক্লাউড সেটআপ হয়নি'); return false; }
+  try{
+    const r = await fetch(API_BASE + cloudId, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({topics: topics, updated: new Date().toISOString()})
+    });
+    if (!r.ok) throw new Error("save failed");
+    toast('✅ ক্লাউডে সেভ হয়েছে — সবাই দেখতে পাবে');
+    return true;
+  }catch(e){
+    toast('❌ সার্ভারে সেভ হয়নি! ইন্টারনেট চেক করো');
+    return false;
   }
 }
-const textOf=c=>c.filter(b=>b.type==='text').map(b=>b.text).join('');
-async function loop(system,messages,tools,label){
-  const allowed=new Set(tools.map(t=>t.name));
-  for(let step=1;step<=MAX_STEPS;step++){
-    const resp=await api({model:model(),max_tokens:6000,system,tools,messages});
-    messages.push({role:'assistant',content:resp.content});
-    if(resp.stop_reason==='pause_turn')continue;
-    if(resp.stop_reason!=='tool_use')return textOf(resp.content)+(resp.stop_reason==='max_tokens'?'\n\n(উত্তর দৈর্ঘ্যের সীমায় কেটে গেছে)':'');
-    const calls=resp.content.filter(b=>b.type==='tool_use');
-    calls.forEach(c=>log(label,`ধাপ ${step}: ${c.name} ${JSON.stringify(c.input).slice(0,90)}`));
-    const results=await Promise.all(calls.map(async c=>{const[out,err]=await runTool(c.name,c.input,label,allowed);return{type:'tool_result',tool_use_id:c.id,content:out,is_error:err}}));
-    messages.push({role:'user',content:results});
+
+/* ---------------- setup ---------------- */
+function startSetup(){
+  askPassword('🔐 অ্যাডমিন পাসওয়ার্ড দিন', async ()=>{
+    try{
+      const r = await fetch(API_BASE, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({topics: seedData(), created: new Date().toISOString()})
+      });
+      if (!r.ok) throw new Error("create failed");
+      const loc = r.headers.get('Location') || '';
+      const id = loc.split('/').filter(Boolean).pop();
+      if (!id) throw new Error("no id");
+      cloudId = id;
+      localStorage.setItem("sv_cloudId", id);
+      topics = seedData();
+      document.getElementById('newCloudId').textContent = id;
+      document.getElementById('doneModalBg').classList.add('show');
+      document.getElementById('setupBanner').style.display = 'none';
+      setStatus(true, '☁️ অনলাইন');
+      render();
+    }catch(e){
+      toast('❌ ক্লাউড তৈরি হয়নি — ইন্টারনেট চেক করে আবার চেষ্টা করো');
+    }
+  });
+}
+function copyCloudId(){
+  const id = document.getElementById('newCloudId').textContent;
+  navigator.clipboard.writeText(id).then(()=>toast('📋 কপি হয়েছে!'));
+}
+
+function seedData(){
+  return [{id:'welcome', name:'📌 স্বাগতম', notes:[{
+    id:'w1', title:'এই ওয়েবসাইটটি কীভাবে ব্যবহার করবেন', type:'text',
+    content:'এটি একটি পাবলিক পড়ার খাতা।\n\n• অ্যাডমিন নোট আপলোড ও ডিলিট করতে পারেন\n• সবাই নোট দেখতে ও পড়তে পারেন\n• ডাউনলোড করতে পাসওয়ার্ড লাগে\n\nএই নমুনা নোটটি অ্যাডমিন প্যানেল থেকে ডিলিট করে দিন।',
+    date:new Date().toLocaleDateString('bn-BD')}]}];
+}
+
+/* ---------------- password flow ---------------- */
+function askPassword(title, onSuccess){
+  pendingAction = onSuccess;
+  document.getElementById('pwTitle').textContent = title;
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwMsg').textContent = '';
+  document.getElementById('pwModalBg').classList.add('show');
+  setTimeout(()=>document.getElementById('pwInput').focus(), 100);
+}
+function pwSubmit(){
+  const val = document.getElementById('pwInput').value;
+  const mode = document.getElementById('pwTitle').textContent;
+  let ok;
+  if (mode.includes('অ্যাডমিন') || mode.includes('ডিলিট')) ok = (val === ADMIN_PASSWORD);
+  else ok = (val === DOWNLOAD_PASSWORD);
+  if (ok){
+    closeModal('pwModalBg');
+    if (mode.includes('অ্যাডমিন')){ isAdmin = true; document.getElementById('adminBar').style.display='flex'; render(); }
+    const fn = pendingAction; pendingAction = null;
+    if (fn) fn();
+  } else {
+    document.getElementById('pwMsg').textContent = '❌ ভুল পাসওয়ার্ড!';
+    document.getElementById('pwMsg').className = 'msg err';
   }
-  // ধাপের সীমা শেষ: টুল ছাড়া সেরা উত্তর চাই
-  messages[messages.length-1].content.push({type:'text',text:'Step limit reached. Give your best final answer now from what you have. Do not call tools.'});
-  const resp=await api({model:model(),max_tokens:3000,system,tools,tool_choice:{type:'none'},messages});
-  messages.push({role:'assistant',content:resp.content});
-  return textOf(resp.content);
-}
-async function spawn({role,instructions,task,tools=[]}){
-  if(spawned>=maxAsst())return[`Error: assistant limit reached (${maxAsst()}). Finish it yourself.`,true];
-  const n=++spawned,label=`সহকারী#${n}:${String(role).slice(0,18)}`;
-  log(label,'তৈরি হলো');
-  const system=`You are a specialist assistant. Role: ${role}.\n${instructions}\n\nA coordinator created you for exactly one task. Work independently, use tools only if needed, and end with a clear, complete result (it is returned to the coordinator).`;
-  try{const r=await loop(system,[{role:'user',content:task}],avail().filter(t=>tools.includes(t.name)),label);log(label,'কাজ শেষ');return[r,false]}
-  catch(e){return['Assistant failed: '+e.message,true]}
 }
 
-const ORCH=()=>`You are a capable personal assistant agent (the coordinator).
-- Simple/quick tasks: do them yourself.
-- Complex tasks or ones with independent parts (research several things, draft + review, code + test): create specialist assistants with spawn_assistant. Make each task self-contained, give the minimum tools, and spawn independent assistants in the same turn so they run in parallel.
-- Check their results, then write ONE final answer. Don't paste raw outputs.
-- At most ${maxAsst()} assistants per request; don't create more than needed.
-- Files live only in the browser workspace. Never claim to have done something you didn't.
-- Reply in the same language the user writes in.`;
+/* ---------------- admin actions ---------------- */
+function openAdmin(){
+  if (isAdmin) return;
+  askPassword('🔐 অ্যাডমিন পাসওয়ার্ড দিন', null);
+}
+function openTopicModal(){ document.getElementById('topicName').value=''; document.getElementById('topicModalBg').classList.add('show'); }
+async function addTopic(){
+  const name = document.getElementById('topicName').value.trim();
+  if(!name) return toast('⚠️ টপিকের নাম দিন');
+  topics.push({id:uid(), name, notes:[]});
+  if (await saveCloud()){ closeModal('topicModalBg'); render(); }
+}
+async function deleteTopic(id){
+  askPassword('🔐 ডিলিট করতে পাসওয়ার্ড দিন', async ()=>{
+    if(!confirm('টপিক ও তার সব নোট মুছে যাবে। নিশ্চিত?')) return;
+    topics = topics.filter(t=>t.id!==id);
+    await saveCloud(); render();
+  });
+}
+function openNoteModal(topicId){
+  currentTopicId = topicId; chosenFile = null;
+  document.getElementById('noteTitle').value='';
+  document.getElementById('noteText').value='';
+  document.getElementById('noteFile').value='';
+  document.getElementById('fileMsg').textContent='';
+  document.getElementById('noteType').value='text';
+  document.getElementById('fileLimitText').textContent = cloudId
+    ? 'PDF/ফাইল — সর্বোচ্চ ২৫০ KB (ফ্রি ক্লাউডের সীমা)'
+    : 'PDF/ফাইল — অফলাইন মোডে সর্বোচ্চ ৩ MB';
+  toggleNoteType();
+  document.getElementById('noteModalBg').classList.add('show');
+}
+function toggleNoteType(){
+  const t = document.getElementById('noteType').value;
+  document.getElementById('textArea').style.display = t==='text' ? 'block':'none';
+  document.getElementById('fileArea').style.display = t==='file' ? 'block':'none';
+}
+function fileChosen(input){
+  const f = input.files[0];
+  if(!f) return;
+  const limit = cloudId ? 250*1024 : 3.5*1024*1024;
+  if (f.size > limit){
+    document.getElementById('fileMsg').textContent = cloudId
+      ? '❌ ফাইল ২৫০ KB-এর বড়! ফ্রি ক্লাউডে ছোট ফাইল রাখুন।'
+      : '❌ ফাইল ৩ MB-এর বড়!';
+    document.getElementById('fileMsg').className = 'msg err';
+    input.value=''; return;
+  }
+  chosenFile = f;
+  document.getElementById('fileMsg').textContent = '✅ নির্বাচিত: ' + f.name + ' (' + (f.size/1024).toFixed(0) + ' KB)';
+  document.getElementById('fileMsg').className = 'msg ok';
+}
+async function addNote(){
+  const title = document.getElementById('noteTitle').value.trim();
+  const type = document.getElementById('noteType').value;
+  const topic = topics.find(t=>t.id===currentTopicId);
+  if(!topic) return;
+  if(!title) return toast('⚠️ শিরোনাম দিন');
 
-// ---------------- UI
-$('#f').addEventListener('submit',async e=>{
-  e.preventDefault();
-  const text=$('#q').value.trim(); if(!text||$('#go').disabled)return;
-  $('#q').value=''; $('#go').disabled=true; $('#stop').style.display='block'; spawned=0; ctrl=new AbortController();
-  add('u',text);
-  const keep=history.length; history.push({role:'user',content:text});
-  const wait=add('a','ভাবছি...');
-  try{const ans=await loop(ORCH(),history,[...avail(),SPAWN],'মূল');wait.remove();add('a',ans,true)}
-  catch(err){history.length=keep;wait.textContent='Error: '+err.message}   // ভাঙা ইতিহাস বাদ দিয়ে আবার চেষ্টা করা যাবে
-  $('#go').disabled=false; $('#stop').style.display='none';
-});
-$('#stop').onclick=()=>ctrl&&ctrl.abort();
-$('#reset').onclick=()=>{history=[];$('#log').innerHTML='';tok.i=tok.o=0;$('#tok').textContent=''};
-$('#files').onclick=()=>add('s',Object.keys(ws).length?Object.entries(ws).map(([k,v])=>`--- ${k} ---\n${v}`).join('\n\n'):'(workspace খালি)');
+  if (type==='text'){
+    const text = document.getElementById('noteText').value.trim();
+    if(!text) return toast('⚠️ লেখা দিন');
+    topic.notes.push({id:uid(), title, type:'text', content:text, date:new Date().toLocaleDateString('bn-BD')});
+    if (await saveCloud()){ closeModal('noteModalBg'); render(); }
+  } else {
+    if(!chosenFile) return toast('⚠️ ফাইল বাছুন');
+    const reader = new FileReader();
+    reader.onload = async e=>{
+      topic.notes.push({id:uid(), title, type:'file', data:e.target.result,
+        fileName:chosenFile.name, fileSize:(chosenFile.size/1024).toFixed(0)+' KB',
+        date:new Date().toLocaleDateString('bn-BD')});
+      if (await saveCloud()){ closeModal('noteModalBg'); render(); }
+    };
+    reader.readAsDataURL(chosenFile);
+  }
+}
+async function deleteNote(topicId, noteId){
+  askPassword('🔐 ডিলিট করতে পাসওয়ার্ড দিন', async ()=>{
+    const t = topics.find(x=>x.id===topicId);
+    if(t) t.notes = t.notes.filter(n=>n.id!==noteId);
+    await saveCloud(); render();
+  });
+}
+
+/* ---------------- download & view ---------------- */
+function downloadNote(topicId, noteId){
+  askPassword('🔽 ডাউনলোডের পাসওয়ার্ড দিন', ()=>{
+    const t = topics.find(x=>x.id===topicId);
+    const n = t && t.notes.find(x=>x.id===noteId);
+    if(!n) return;
+    if (n.type==='text'){
+      const blob = new Blob([n.title + '\n\n' + n.content], {type:'text/plain;charset=utf-8'});
+      triggerDownload(URL.createObjectURL(blob), n.title + '.txt');
+    } else {
+      triggerDownload(n.data, n.fileName || n.title);
+    }
+  });
+}
+function triggerDownload(href, name){
+  const a = document.createElement('a');
+  a.href = href; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function dataUrlToBlobUrl(dataUrl){
+  const [meta, b64] = dataUrl.split(',');
+  const mime = (meta.match(/data:(.*?);/) || [])[1] || 'application/octet-stream';
+  const bin = atob(b64); const arr = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+  return URL.createObjectURL(new Blob([arr], {type:mime}));
+}
+function viewNote(topicId, noteId){
+  const t = topics.find(x=>x.id===topicId);
+  const n = t && t.notes.find(x=>x.id===noteId);
+  if(!n) return;
+  if (n.type==='file'){ window.open(dataUrlToBlobUrl(n.data), '_blank'); return; }
+  const w = window.open('', '_blank');
+  w.document.write('<html lang="bn"><head><meta charset="utf-8"><title>'+n.title+'</title>'+
+    '<style>body{font-family:sans-serif;max-width:800px;margin:40px auto;padding:0 16px;line-height:1.9;color:#222}h1{color:#0369a1}pre{white-space:pre-wrap;font-size:1.05rem;font-family:inherit}</style></head><body>'+
+    '<h1>'+n.title+'</h1><hr><pre>'+(n.content||'').replace(/</g,'&lt;')+'</pre></body></html>');
+  w.document.close();
+}
+
+/* ---------------- render ---------------- */
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+function render(){
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const box = document.getElementById('topics');
+  if (!topics.length){
+    box.innerHTML = '<div class="empty">এখনো কোনো টপিক নেই।</div>';
+    return;
+  }
+  let html = '';
+  topics.forEach(t=>{
+    const notes = t.notes.filter(n => !q || n.title.toLowerCase().includes(q) || t.name.toLowerCase().includes(q));
+    if (q && !notes.length && !t.name.toLowerCase().includes(q)) return;
+    html += '<div class="topic open">';
+    html += '<div class="topic-head" onclick="this.parentElement.classList.toggle(\'open\')">';
+    html += '<h2>📂 ' + esc(t.name) + '<span class="count">(' + t.notes.length + 'টি নোট)</span></h2>';
+    html += '<div>' + (isAdmin ? '<button class="btn btn-ghost" style="padding:6px 12px;font-size:.8rem" onclick="event.stopPropagation();openNoteModal(\''+t.id+'\')">➕ নোট</button> <button class="btn btn-danger" style="padding:6px 12px;font-size:.8rem" onclick="event.stopPropagation();deleteTopic(\''+t.id+'\')">🗑️</button>' : '') + '</div>';
+    html += '</div><div class="topic-body">';
+    if (!t.notes.length) html += '<div class="empty">কোনো নোট নেই</div>';
+    notes.forEach(n=>{
+      const icon = n.type==='text' ? '📝' : '📄';
+      html += '<div class="note"><span class="icon">' + icon + '</span>';
+      html += '<div class="info"><b>' + esc(n.title) + '</b><small>' + (n.date||'') + (n.fileSize ? ' • ' + n.fileSize : '') + '</small></div>';
+      html += '<div>';
+      html += '<button class="btn btn-ghost" style="padding:6px 12px;font-size:.8rem" onclick="viewNote(\''+t.id+'\',\''+n.id+'\')">👁️ পড়ুন</button> ';
+      html += '<button class="btn btn-primary" style="padding:6px 12px;font-size:.8rem" onclick="downloadNote(\''+t.id+'\',\''+n.id+'\')">🔽 ডাউনলোড</button>';
+      if (isAdmin) html += ' <button class="btn btn-danger" style="padding:6px 12px;font-size:.8rem" onclick="deleteNote(\''+t.id+'\',\''+n.id+'\')">🗑️</button>';
+      html += '</div></div>';
+    });
+    html += '</div></div>';
+  });
+  box.innerHTML = html || '<div class="empty">কিছু পাওয়া যায়নি</div>';
+}
+
+refreshCloud(false);
 </script>
 </body>
 </html>
